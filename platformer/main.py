@@ -10,8 +10,8 @@ class Game:
         pg.init()
         pg.mixer.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
-        self.background = pg.Surface(self.screen.get_size())
-        self.background = self.background.convert()
+        #self.background = pg.Surface(self.screen.get_size())
+        #self.background = self.background.convert()
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.running = True
@@ -27,6 +27,7 @@ class Game:
             self.all_Sprites.add(platform)
             self.platforms.add(platform)
 
+        self.run()
     #game loop
     def run(self):
         self.playing = True
@@ -35,6 +36,15 @@ class Game:
             self.events()
             self.update()
             self.draw()
+                # keep loop running at the right speed
+        # Process input (events)
+        for event in pg.event.get():
+            # check for closing window
+            if event.type == pg.QUIT:
+                running = False
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_f:
+                    player.shoot()
 
     def update(self):
         self.all_Sprites.update()
@@ -57,7 +67,7 @@ class Game:
     def draw(self):
         self.screen.fill(BLACK)
         self.all_Sprites.draw(self.screen)
-        self.screen.blit(self.background, (0, 0))
+        #self.screen.blit(self.background, (0, 0))
 
         pg.display.flip()
 

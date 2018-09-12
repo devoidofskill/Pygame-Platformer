@@ -27,10 +27,10 @@ class Player(pg.sprite.Sprite):
         if hits:
             self.vy = -30
 
-    '''def shoot(self):
+    def shoot(self):
         bullet = Bullet(self.rect.centerx, self.rect.top)
         self.all_sprites.add(bullet)
-        self.bullets.add(bullet)'''
+        self.bullets.add(bullet)
 
 
     def update(self):
@@ -61,7 +61,7 @@ class Platform(pg.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-'''class Bullet(pg.sprite.Sprite):
+class Bullet(pg.sprite.Sprite):
     def __init__(self, bx, by):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((10, 20))
@@ -74,4 +74,4 @@ class Platform(pg.sprite.Sprite):
     def update(self):
         self.rect.y += self.vy
         if self.rect.bottom < 0:
-            self.kill()'''
+            self.kill()
