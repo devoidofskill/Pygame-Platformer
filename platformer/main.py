@@ -5,6 +5,7 @@ import random
 from settings import *
 from sprites import *
 
+
 class Game:
     #init game window, etc
     def __init__(self):
@@ -146,3 +147,4 @@ while game.running:
     game.show_go_Screen()
     print("Hello World")
 pg.quit()
+
