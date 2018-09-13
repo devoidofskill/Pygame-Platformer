@@ -1,15 +1,19 @@
 #Sprites
 import pygame as pg
 from settings import *
+from random import choice, randrange
 
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game):
-        pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((20, 30))
+        self.groups = game.all_Sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.image = pg.Surface((27, 48))
         self.image.fill(RED)
         self.game = game
-        #self.bullet = Bullet
+        self.all_Sprites = pg.sprite.Group()
+        self.bullets = pg.sprite.Group()
+        self.bullet = Bullet
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)
         self.vx = 0
@@ -25,13 +29,7 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
         self.rect.x = 1
         if hits:
-            self.vy = -30
-
-    def shoot(self):
-        bullet = Bullet(self.rect.centerx, self.rect.top)
-        self.all_sprites.add(bullet)
-        self.bullets.add(bullet)
-
+            self.vy = -50
 
     def update(self):
         self.ax = 0
@@ -52,26 +50,69 @@ class Player(pg.sprite.Sprite):
 
         self.rect.midbottom = (self.px, self.py)
 
+    def shoot(self):
+        bullet = Bullet(self.rect.centerx, self.rect.top)
+        self.all_Sprites.add(bullet)
+        self.bullets.add(bullet)
+
 class Platform(pg.sprite.Sprite):
-    def __init__(self, x, y, w, h):
+    def __init__(self, game, x, y, w, h):
         pg.sprite.Sprite.__init__(self)
+        self.game = game
         self.image = pg.Surface((w, h))
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        if randrange(100) < POW_SPAWN_PCT:
+            Pow(self.game, self)
 
 class Bullet(pg.sprite.Sprite):
-    def __init__(self, bx, by):
+    def __init__(self, x, y):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((10, 20))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
-        self.rect.bottom = by
-        self.rect.centerx = bx
-        self.speedy = -10
+        self.rect.bottom = y
+        self.rect.centerx = x
+        self.vy = -10
 
     def update(self):
         self.rect.y += self.vy
         if self.rect.bottom < 0:
+            self.kill()
+
+class Mob(pg.sprite.Sprite):
+    def __init__(self, game):
+        self._layer = MOB_LAYER
+        self.groups = game.all_Sprites, game.mobs
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((40, 48))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = choice([-100, WIDTH + 100])
+        self.vx = randrange(1, 4)
+        if self.rect.centerx > WIDTH:
+            self.vx *= -1
+        self.rect.y = randrange(HEIGHT / 2)
+        self.vy = 0
+        self.dy = 0.5
+
+class Pow(pg.sprite.Sprite):
+    def __init__(self, game, plat):
+        self.groups = game.all_Sprites, game.powerups
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.plat = plat
+        self.type = choice(['boost'])
+        self.image = pg.Surface((20,20))
+        self.image.fill(YELLOW)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.plat.rect.centerx
+        self.rect.bottom = self.plat.rect.top - 5
+
+    def update(self):
+        self.rect.bottom = self.plat.rect.top - 5
+        if not self.game.platforms.has(self.plat):
             self.kill()

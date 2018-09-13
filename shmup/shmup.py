@@ -43,10 +43,10 @@ class Player(pygame.sprite.Sprite):
         if self.rect.left < 0:
             self.rect.left = 0
 
-    '''def shoot(self):
+    def shoot(self):
         bullet = Bullet(self.rect.centerx, self.rect.top)
         all_sprites.add(bullet)
-        bullets.add(bullet)'''
+        bullets.add(bullet)
 
 class Mob(pygame.sprite.Sprite):
     def __init__(self):
